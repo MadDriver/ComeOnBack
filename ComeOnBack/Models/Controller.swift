@@ -18,8 +18,5 @@ struct Controller: Hashable, Identifiable, Codable  {
     var phoneNumber: Int?
     var isPagedBack: Bool
     
-//    static let allControllers: [Controller] = Bundle.main.decode(file: "controller.json")
-//    static let sampleController: Controller = allControllers[0]
-    
 }
 

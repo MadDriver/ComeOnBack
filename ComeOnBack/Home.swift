@@ -94,35 +94,22 @@ struct Home: View {
     }
     
     func getControllers() {
-        
-        var html = ""
-        var x = 0
-        
+                
         if let htmlPath = Bundle.main.url(forResource: "controllerList", withExtension: "html") {
             do {
-                html = try String(contentsOf: htmlPath, encoding: .utf8)
+                let html = try String(contentsOf: htmlPath, encoding: .utf8)
                 let doc = try SwiftSoup.parse(html)
-                let table = try doc.getElementById("tblNATCALIST")
-                let rows: Elements? = try table?.getElementsByTag("tr")
+                guard let table = try doc.getElementById("tblNATCALIST") else {
+                    return
+                }
                 
-                try rows!.forEach({ row in
-                         
+                for tr in try table.getElementsByTag("tr").dropFirst(1) {
+                    let tds = try tr.getElementsByTag("td")
+                    let controllerName = try tds[0].text(trimAndNormaliseWhitespace: true)
+                    let controllerInitials = try tds[1].text(trimAndNormaliseWhitespace: true)
                     
-                    if x == 0 {
-                        x += 1
-                    } else {
-                        let name = try row.getElementById("tdName-\(x)")
-                        let initials = try row.getElementById("tdInitials-\(x)")
-                        
-                        if let name = name, let initials = initials {
-                            createController(name: try name.text(), initials: try initials.text())
-//
-//                            controllers.append(stripControllerName(name: try name.text(), initials: try initials.text()))
-                        }
-                        x += 1
-                    }
-                })
-                
+                    createController(name: controllerName, initials: controllerInitials)
+                }
 
             } catch(let err) {
                 print(err.localizedDescription)
